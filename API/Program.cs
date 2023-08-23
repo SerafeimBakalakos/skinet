@@ -19,6 +19,7 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 // Transient: lifetime of method where service is created. Too short for data access services.
 // Singleton: lifetime of application. Good for caching, but too long for data access services.
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 var app = builder.Build();
 
