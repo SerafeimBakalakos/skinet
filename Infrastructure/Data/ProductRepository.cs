@@ -15,7 +15,10 @@ namespace Infrastructure.Data
 
         public async Task<Product> GetProductByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products
+                .Include(p => p.ProductBrand) // Eager loading for navigational property
+                .Include(p => p.ProductType)
+                .FirstOrDefaultAsync(p => p.Id == id); // FindAsync does not work with queries. SingleOrDefault will throw error if there are duplicates
         }
 
         public async Task<IReadOnlyList<Product>> GetProductsAsync()
@@ -25,9 +28,11 @@ namespace Infrastructure.Data
             // While the Task executes in the background (probably by some other thread),
             // this thread is free to handle another HTTP request.
             // When the Task finished, it notifies this thread to collect the data.
-            var products = await _context.Products.ToListAsync();
+            return await _context.Products
+                .Include(p => p.ProductBrand) // Eager loading for navigational property
+                .Include(p => p.ProductType)
+                .ToListAsync(); // At this point, the query is sent to SQL
 
-            return products; // no need for 2 separate lines
         }
 
         public async Task<IReadOnlyList<ProductBrand>> GetProductBrandsAsync()
