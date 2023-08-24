@@ -32,8 +32,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseStaticFiles(); //position before UseAuthorization
 
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
