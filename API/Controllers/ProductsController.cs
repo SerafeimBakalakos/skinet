@@ -34,21 +34,14 @@ namespace API.Controllers
         }
 
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
-        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
         {
             // Eager loading of navigation properties with repo and specification patterns
             var spec = new ProductsWithTypesAndBrandsSpecification();
             var products = await _productsRepo.ListAsync(spec);
-            return products.Select(product => new ProductToReturnDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                PictureUrl = product.PictureUrl,
-                Price = product.Price,
-                ProductBrand = product.ProductBrand.Name,
-                ProductType = product.ProductType.Name
-            }).ToList(); // ToList() is called on an in-memory object, instead of ToListAsync() called on the DB
+
+            return Ok(
+                _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
             // Mapping is done in the API controller for now. It would be more efficient to do it in the specification.
         }
 
