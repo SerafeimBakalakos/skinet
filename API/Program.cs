@@ -1,6 +1,8 @@
+using API.Errors;
 using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,28 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Override aspects of the behaviour of ApiController attribute
+// ApiController adds validation errors to the ModelState of the response
+builder.Services.Configure<ApiBehaviorOptions>(options =>  
+{
+    options.InvalidModelStateResponseFactory = actionContext => 
+    {
+        // We can access the ModelState (which is a Dictionary) here.
+        // We will just gather the error messages from it.
+        string[] errors = actionContext.ModelState
+            .Where(e => e.Value.Errors.Count > 0)
+            .SelectMany(x => x.Value.Errors)
+            .Select(x => x.ErrorMessage).ToArray();
+
+        // Then return an error response with these messages
+        var errorResponse = new ApiValidationErrorResponse
+        {
+            Errors = errors
+        };
+        return new BadRequestObjectResult(errorResponse);
+    };
+});
 
 var app = builder.Build();
 
