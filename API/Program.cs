@@ -26,6 +26,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+// There is a hidden piece of middleware here, called developer exception page.
+// Errors are thrown up the pipeline (from commands under this line towards it), until it can be handled
+
+app.UseStatusCodePagesWithReExecute("/errors/{0}"); // This handles requests to endpoints that do not exist
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
