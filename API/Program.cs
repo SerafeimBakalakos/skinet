@@ -1,3 +1,4 @@
+using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ var app = builder.Build();
 
 // There is a hidden piece of middleware here, called developer exception page.
 // Errors are thrown up the pipeline (from commands under this line towards it), until it can be handled
+// Thus our exception handling should be done at the start of the pipeline
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}"); // This handles requests to endpoints that do not exist
 
