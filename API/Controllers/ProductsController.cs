@@ -1,4 +1,5 @@
 using API.Dtos;
+using API.Errors;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -44,10 +45,17 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)] //Not necessary. Swagger new about this. All these attributes to facilitate Swagger would make the code cumbersome. Better let Swagger to pick up the most important ones.
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)] //Informs Swagger that a 404 response may be returned and its format.
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             var spec = new ProductsWithTypesAndBrandsSpecification(id);
             var product = await _productsRepo.GetEntityWithSpec(spec);
+            if (product == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+
             return _mapper.Map<Product, ProductToReturnDto>(product);
         }
 
