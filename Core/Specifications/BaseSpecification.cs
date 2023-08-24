@@ -4,6 +4,10 @@ namespace Core.Specifications
 {
     public class BaseSpecification<T> : ISpecification<T>
     {
+        public BaseSpecification()
+        {
+        }
+
         public BaseSpecification(Expression<Func<T, bool>> criteria)
         {
             Criteria = criteria;
@@ -14,7 +18,7 @@ namespace Core.Specifications
         public List<Expression<Func<T, object>>> Includes { get; } 
             = new List<Expression<Func<T, object>>>();  
 
-        protected void  AddInclude(Expression<Func<T, object>> includeExpression)
+        protected void AddInclude(Expression<Func<T, object>> includeExpression)
         {
             Includes.Add(includeExpression);
         }

@@ -1,5 +1,6 @@
 using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,9 @@ namespace API.Controllers
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var products = await _productsRepo.ListAllAsync();
+            // Eager loading of navigation properties with repo and specification patterns
+            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var products = await _productsRepo.ListAsync(spec);
             return Ok(products); // no need for 2 separate lines
         }
 
