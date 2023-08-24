@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(); // Documents our API controllers into a JSON file
 builder.Services.AddDbContext<StoreContext>(opt => 
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -59,12 +59,14 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}"); // This handles requests to endpoints that do not exist
 
-if (app.Environment.IsDevelopment())
-{
+// We will keep it in production too
+// if (app.Environment.IsDevelopment())
+// {
+    // The Swagger JSON file is used to generate the UI
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
+// }
+    
 app.UseStaticFiles(); //position before UseAuthorization
 
 //app.UseHttpsRedirection();
