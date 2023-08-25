@@ -49,6 +49,22 @@ namespace API.Extensions
                 };
             });
 
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    // The browser accesses a web page, served by our client app. This page will try to send requests to the ApiServer, which may be on a different origin. 
+                    // Browser sequrity prevents a page to make requests to a different domain than the one that served the page. This also prevents malicious sites from accessing sensitive data from the ApiServer.
+                    // CORS relaxes this single-origin policy.
+                    // See https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
+
+
+                    // No restrictions to headers and methods.
+                    // Our client-app will run on a different domain (https://localhost:4200) than our API server (https://localhost:5001), thus we must allow our client-app domain as a cross-origin
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+                });
+            });
+
             return services;
         }
     }

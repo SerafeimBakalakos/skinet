@@ -35,6 +35,7 @@ app.UseStatusCodePagesWithReExecute("/errors/{0}"); // This handles requests to 
 app.UseStaticFiles(); //position before UseAuthorization
 
 //app.UseHttpsRedirection();
+app.UseCors("CorsPolicy"); // Must be just before UseAuthorization(). Use the same name as when defining the policy in the services.
 app.UseAuthorization();
 
 app.MapControllers();
