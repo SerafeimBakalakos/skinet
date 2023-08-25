@@ -36,7 +36,7 @@ namespace API.Controllers
         public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(string sort)
         {
             // Eager loading of navigation properties with repo and specification patterns
-            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var spec = new ProductsWithTypesAndBrandsSpecification(sort);
             var products = await _productsRepo.ListAsync(spec);
 
             return Ok(

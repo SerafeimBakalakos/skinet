@@ -27,6 +27,7 @@ namespace Core.Specifications
             Includes.Add(includeExpression);
         }
 
+        //QUESTION: Why not name this SetOrderBy(...). It does not add to a list, but sets the property.
         protected void AddOrderBy(Expression<Func<T, object>> orderByExpression)
         {
             OrderBy = orderByExpression;
