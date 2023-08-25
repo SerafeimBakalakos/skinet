@@ -33,10 +33,18 @@ namespace API.Controllers
         }
 
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(string sort, int? brandId, int? typeId)
-        { //QUESTION: Not only do we have case-sensitive parameters (the order can be random, since they are named parameters), but also each filter is an explicit nullable parameter and changes the signature of this method and the specification. Isn't there a better way?
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
+        { 
+            // About parameters.
+            // In GET requests, parameters are automatically bound to the query string, namely the portion of the URL after "?", by the ApiController.
+            // Here, there is an object of ProductSpecParams that can be automatically bound, but confuses the ApiController.
+            // The [FromQuery] attribute tells the ApiController to bind the parameters of ProductSpecParams to the query string.
+            // GET requests do not have a body. In other requests, the data is usually passed from the body of the request.
+            // In case of confusion, we would use [FromBody] or [FromForm] attributes.
+            // Passing data [FromQuery] would also be possible, but unusual.
+
             // Eager loading of navigation properties with repo and specification patterns
-            var spec = new ProductsWithTypesAndBrandsSpecification(sort, brandId, typeId);
+            var spec = new ProductsWithTypesAndBrandsSpecification(productParams);
             var products = await _productsRepo.ListAsync(spec);
 
             return Ok(

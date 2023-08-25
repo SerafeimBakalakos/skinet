@@ -11,5 +11,9 @@ namespace Core.Specifications
 
         //QUESTION: This way it is possible to specify both ascending and descending ordering at the same time. Why not specify the direction of the ordering instead? 
         Expression<Func<T, object>> OrderByDescending { get; }
+
+        int Take { get; }
+        int Skip { get; }
+        bool IsPagingEnabled { get; }
     }
 }
