@@ -4,6 +4,7 @@ namespace Core.Specifications
     {
         private const int MaxPageSize = 50;
         private int _pageSize = 6;
+        private string _search;
 
         public int PageIndex { get; set; } = 1;
 
@@ -18,5 +19,11 @@ namespace Core.Specifications
         public int? TypeId { get; set; }
 
         public string Sort { get; set; }
+
+        public string Search 
+        { 
+            get => _search; 
+            set => _search = value.ToLower(); 
+        }
     }
 }
