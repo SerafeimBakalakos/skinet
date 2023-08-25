@@ -33,10 +33,10 @@ namespace API.Controllers
         }
 
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(string sort)
-        {
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(string sort, int? brandId, int? typeId)
+        { //QUESTION: Not only do we have case-sensitive parameters (the order can be random, since they are named parameters), but also each filter is an explicit nullable parameter and changes the signature of this method and the specification. Isn't there a better way?
             // Eager loading of navigation properties with repo and specification patterns
-            var spec = new ProductsWithTypesAndBrandsSpecification(sort);
+            var spec = new ProductsWithTypesAndBrandsSpecification(sort, brandId, typeId);
             var products = await _productsRepo.ListAsync(spec);
 
             return Ok(
