@@ -33,7 +33,7 @@ namespace API.Controllers
         }
 
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(string sort)
         {
             // Eager loading of navigation properties with repo and specification patterns
             var spec = new ProductsWithTypesAndBrandsSpecification();
