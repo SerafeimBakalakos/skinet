@@ -1,5 +1,6 @@
 using API.Dtos;
 using API.Errors;
+using API.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -33,7 +34,7 @@ namespace API.Controllers
         }
 
         [HttpGet] //Returned type for HTTP requests should be ActionResult<> 
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
         { 
             // About parameters.
             // In GET requests, parameters are automatically bound to the query string, namely the portion of the URL after "?", by the ApiController.
@@ -47,8 +48,12 @@ namespace API.Controllers
             var spec = new ProductsWithTypesAndBrandsSpecification(productParams);
             var products = await _productsRepo.ListAsync(spec);
 
-            return Ok(
-                _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+            var countSpec = new ProductsWithFiltersForCountSpecification(productParams);
+            int totalItems = await  _productsRepo.CountAsync(countSpec);
+
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+
+            return Ok(new Pagination<ProductToReturnDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
             // Mapping is done in the API controller for now. It would be more efficient to do it in the specification.
         }
 

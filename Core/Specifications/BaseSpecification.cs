@@ -11,6 +11,7 @@ namespace Core.Specifications
         public BaseSpecification(Expression<Func<T, bool>> criteria)
         {
             Criteria = criteria;
+            //QUESTION: Why pass the filtering criteria to the ctor, but all other data (sorting, paging, including) to properties? Filtering is optional too. It makes derived contructors significantly less readable.
         }
 
         public Expression<Func<T, bool>> Criteria { get; }
