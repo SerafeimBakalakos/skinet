@@ -7,11 +7,11 @@ import { IProduct } from '../shared/models/product';
   providedIn: 'root'
 })
 export class ShopService {
-  baseUrl = 'https://cocalhost:5001/api/';
+  baseUrl = 'https://localhost:5001/api/';
 
   constructor(private http:HttpClient) { }
 
   getProducts() {
-    return this.http.get<IPagination<IProduct[]>>(this.baseUrl + 'products');
+    return this.http.get<IPagination<IProduct[]>>(this.baseUrl + 'products?pageSize=50');
   }
 }
