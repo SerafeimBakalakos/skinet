@@ -13,9 +13,10 @@ export class ShopComponent implements OnInit {
   products: IProduct[] = [];
   brands: IBrand[] = [];
   productTypes: IProductType[] = [];
+  brandIdSelected = 0;
+  typeIdSelected = 0;
   
   constructor(private shopService: ShopService) {}
-
   
   ngOnInit(): void {
     this.getProducts();
@@ -23,10 +24,9 @@ export class ShopComponent implements OnInit {
     this.getProductTypes();
   }
 
-  getProducts()
-  {
+  getProducts() {
     // GET returns an observable and we need to subscribe to it (otherwise the request will be skipped) using an observer object {next:..., error:..., complete:...}
-    this.shopService.getProducts().subscribe({
+    this.shopService.getProducts(this.brandIdSelected, this.typeIdSelected).subscribe({
       next: response => this.products = response.data, // what to do after the response is received
       error: err => console.log(err), // what to do in case of error
       complete: () => {
@@ -36,21 +36,27 @@ export class ShopComponent implements OnInit {
     })
   }
 
-  getBrands()
-  {
-    // GET returns an observable and we need to subscribe to it (otherwise the request will be skipped) using an observer object {next:..., error:..., complete:...}
+  getBrands() {
     this.shopService.getBrands().subscribe({
-      next: response => this.brands = response, // what to do after the response is received
-      error: err => console.log(err) // what to do in case of error
+      next: response => this.brands = [{id:0, name: 'All'}, ...response], // spread operator will create an array with "All", response[1], response[2], etc.
+      error: err => console.log(err) 
     })
   }
 
-  getProductTypes()
-  {
-    // GET returns an observable and we need to subscribe to it (otherwise the request will be skipped) using an observer object {next:..., error:..., complete:...}
+  getProductTypes() {
     this.shopService.getProductTypes().subscribe({
-      next: response => this.productTypes = response, // what to do after the response is received
-      error: err => console.log(err) // what to do in case of error
+      next: response => this.productTypes = [{id:0, name: 'All'}, ...response],
+      error: err => console.log(err)
     })
+  }
+
+  onBrandSelected(brandId: number) {
+    this.brandIdSelected = brandId;
+    this.getProducts();
+  }
+
+  onTypeSelected(typeId: number) {
+    this.typeIdSelected = typeId;
+    this.getProducts();
   }
 }
