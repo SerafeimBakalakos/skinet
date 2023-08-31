@@ -22,6 +22,7 @@ export class ShopService {
     prodParams = prodParams.append('sort', shopParams.sort); 
     prodParams = prodParams.append('pageIndex', shopParams.pageIndex); 
     prodParams = prodParams.append('pageSize', shopParams.pageSize); 
+    if (shopParams.search) prodParams = prodParams.append('search', shopParams.search);
 
     return this.http.get<IPagination<IProduct[]>>(this.baseUrl + 'products', {params: prodParams});
   }

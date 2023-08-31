@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IProduct } from '../shared/models/product';
 import { ShopService } from './shop.service';
 import { IProductType } from '../shared/models/product-type';
@@ -11,6 +11,7 @@ import { ShopParams } from '../shared/models/shop-params';
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit {
+  @ViewChild('search') searchTerm?: ElementRef; // Angular's ViewChild can access the HTML reference variable #search, which was defined in the input element
   products: IProduct[] = [];
   brands: IBrand[] = [];
   productTypes: IProductType[] = [];
@@ -82,5 +83,18 @@ export class ShopComponent implements OnInit {
       this.shopParams.pageIndex = event;
       this.getProducts();
     }
+  }
+
+  onSearch() {
+    this.shopParams.search = this.searchTerm?.nativeElement.value;
+    this.getProducts();
+  }
+
+  onReset() {
+    if (this.searchTerm) this.searchTerm.nativeElement.value = ''; 
+    // why not: this.searchTerm?.nativeElement.value = '' 
+    
+    this.shopParams = new ShopParams();
+    this.getProducts();
   }
 }

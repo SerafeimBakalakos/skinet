@@ -4,4 +4,5 @@ export class ShopParams {
     sort = 'name';
     pageIndex = 1; // better use pageNumber both here and in the API. Just stay consistent
     pageSize = 6;
+    search = '';
 }
