@@ -3,6 +3,7 @@ import { IProduct } from '../shared/models/product';
 import { ShopService } from './shop.service';
 import { IProductType } from '../shared/models/product-type';
 import { IBrand } from '../shared/models/brand';
+import { ShopParams } from '../shared/models/shop-params';
 
 @Component({
   selector: 'app-shop',
@@ -13,14 +14,13 @@ export class ShopComponent implements OnInit {
   products: IProduct[] = [];
   brands: IBrand[] = [];
   productTypes: IProductType[] = [];
-  brandIdSelected = 0;
-  typeIdSelected = 0;
-  sortSelected = 'name';
+  shopParams = new ShopParams();
   sortOptions = [
     {name:'Alphabetical', value:'name'},
     {name:'Price: low to high', value:'priceAsc'},
     {name:'Price: high to low', value:'priceDsc'}
   ]
+  totalCount = 0;
   
   constructor(private shopService: ShopService) {}
   
@@ -32,8 +32,13 @@ export class ShopComponent implements OnInit {
 
   getProducts() {
     // GET returns an observable and we need to subscribe to it (otherwise the request will be skipped) using an observer object {next:..., error:..., complete:...}
-    this.shopService.getProducts(this.brandIdSelected, this.typeIdSelected, this.sortSelected).subscribe({
-      next: response => this.products = response.data, // what to do after the response is received
+    this.shopService.getProducts(this.shopParams).subscribe({
+      next: response => {
+        this.products = response.data 
+        this.shopParams.pageNumber = response.pageIndex;
+        this.shopParams.pageSize = response.pageSize;
+        this.totalCount = response.count;
+      }, // what to do after the response is received
       error: err => console.log(err), // what to do in case of error
       complete: () => {
         console.log('request completed');
@@ -57,18 +62,18 @@ export class ShopComponent implements OnInit {
   }
 
   onBrandSelected(brandId: number) {
-    this.brandIdSelected = brandId;
+    this.shopParams.brandId = brandId;
     this.getProducts();
   }
 
   onTypeSelected(typeId: number) {
-    this.typeIdSelected = typeId;
+    this.shopParams.typeId = typeId;
     this.getProducts();
   }
 
   // The event object will be received by the API. It is very tricky to use a specific type, thus we forgo strong typing here
   onSortSelected(event: any) {
-    this.sortSelected = event.target.value;
+    this.shopParams.sort = event.target.value;
     this.getProducts();
   }
 }
