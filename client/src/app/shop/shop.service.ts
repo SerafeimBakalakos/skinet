@@ -20,6 +20,8 @@ export class ShopService {
     if (shopParams.brandId > 0) prodParams = prodParams.append('brandId', shopParams.brandId); 
     if (shopParams.typeId > 0) prodParams = prodParams.append('typeId', shopParams.typeId); 
     prodParams = prodParams.append('sort', shopParams.sort); 
+    prodParams = prodParams.append('pageIndex', shopParams.pageIndex); 
+    prodParams = prodParams.append('pageSize', shopParams.pageSize); 
 
     return this.http.get<IPagination<IProduct[]>>(this.baseUrl + 'products', {params: prodParams});
   }
