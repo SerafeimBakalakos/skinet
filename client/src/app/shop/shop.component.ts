@@ -81,7 +81,8 @@ export class ShopComponent implements OnInit {
   }
 
   onPageChanged(event: any) {
-    if (this.shopParams.pageIndex !== event) { //event is the emitted page number
+    //event is the emitted page number, thus its type is number
+    if (this.shopParams.pageIndex !== event) { 
       this.shopParams.pageIndex = event;
       this.getProducts();
     }
