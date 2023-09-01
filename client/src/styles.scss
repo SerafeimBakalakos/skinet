@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+
+// By applying the style globally, we overwrite the default styles from the library, which could not be done in the component's scss. Isn't there a better way to style components from libraries? 
+label.xng-breadcrumb-trail { // we found out the label selector with class="xng-breadcrumb-trail" by inspecting the element in a browser
+    color: orange;
+}

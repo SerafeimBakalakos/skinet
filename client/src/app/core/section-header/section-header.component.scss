@@ -1,0 +1,5 @@
+// The next style does not work in component's scss, because the styles applied in the breadcrumb components are encapsulated. This can be solved by applying our style globally in style.scss
+
+// label.xng-breadcrumb-trail { // we found out the label selector with class="xng-breadcrumb-trail" by inspecting the element in a browser
+//     color: orange;
+// }
