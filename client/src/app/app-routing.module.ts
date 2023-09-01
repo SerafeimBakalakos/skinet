@@ -6,7 +6,7 @@ import { NotFoundComponent } from './core/not-found/not-found.component';
 import { ServerErrorComponent } from './core/server-error/server-error.component';
 
 const routes: Routes = [
-  {path:'', component:HomeComponent}, // homepage
+  {path:'', component:HomeComponent, data:{breadcrumb:'Home'}}, // homepage
   {path:'test-error', component:TestErrorComponent}, // homepage
   {path:'not-found', component:NotFoundComponent}, // homepage
   {path:'server-error', component:ServerErrorComponent}, // homepage
