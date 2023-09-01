@@ -22,12 +22,17 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error) {
-          if (error.status === 400)
-          {
-            this.toastr.error(error.error.message, error.status.toString())
+          if (error.status === 400) {
+            if (error.error.errors) { // validation errors are represented by an array of error messages 
+              
+              // Let the component deal with the validation errors. 
+              // Usually some info is missing from a form and we want the form's component to handle that.
+              throw error.error; 
+            } else {
+              this.toastr.error(error.error.message, error.status.toString());
+            }
           }
-          if (error.status === 401)
-          {
+          if (error.status === 401) {
             this.toastr.error(error.error.message, error.status.toString())
           }
           if (error.status === 404) {
