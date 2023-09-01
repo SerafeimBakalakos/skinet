@@ -9,3 +9,18 @@
     top: -12px;
     right: 32px;
 }
+
+// CSS encapsulation: any changes here, will only affect the <a></a> elements inside the navbar component. Behind the scenes, Angular converts this to an _ngcontent-... class. 
+a {
+    text-decoration: none;
+    color: #343a40;
+
+    &.active {
+        color: orange
+    }
+}
+
+.logo {
+    cursor: pointer;
+    max-height: 70px;
+}
