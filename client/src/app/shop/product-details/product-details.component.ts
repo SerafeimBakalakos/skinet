@@ -14,7 +14,10 @@ export class ProductDetailsComponent implements OnInit {
   
   constructor(private shopService: ShopService, 
     private activatedRoute:ActivatedRoute, 
-    private bcService:BreadcrumbService) {}
+    private bcService:BreadcrumbService) 
+    {
+      this.bcService.set('@productDetails', ' '); // empty string (needs a char to work) to show while loading 
+    }
 
   ngOnInit(): void {
     this.loadProduct();
