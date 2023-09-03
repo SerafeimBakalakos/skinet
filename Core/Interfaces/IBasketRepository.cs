@@ -4,6 +4,11 @@ namespace Core.Interfaces
 {
     public interface IBasketRepository
     {
+        /// <summary>
+        /// Can be null, if no such <paramref name="basketId"/> exists.
+        /// </summary>
+        /// <param name="basketId"></param>
+        /// <returns></returns>
         Task<CustomerBasket> GetBasketAsync(string basketId);
         
         /// <summary>
