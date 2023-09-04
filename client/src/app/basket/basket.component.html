@@ -63,6 +63,18 @@
                     </table>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-6 offset-6">
+                    <app-order-totals></app-order-totals>
+
+                    <!-- We want a button that takes up the full width of the right hand side-->
+                    <div class="d-grid">
+                        <a routerLink="/checkout" class="btn btn-outline-primary py-2">
+                            Proceed to checkout
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </ng-container>
 </div>
