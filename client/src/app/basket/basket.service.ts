@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Basket, IBasket, IBasketItem } from '../shared/models/basket';
+import { Basket, BasketTotals, IBasket, IBasketItem } from '../shared/models/basket';
 import { HttpClient } from '@angular/common/http';
 import { IProduct } from '../shared/models/product';
 
@@ -19,20 +19,29 @@ export class BasketService {
   // The other components will actually subscribe to this one.
   basketSource$ = this.basketSource.asObservable();
 
+  private basketTotalSource = new BehaviorSubject<BasketTotals | null>(null);
+  basketTotalSource$ = this.basketTotalSource.asObservable();
+
   constructor(private http:HttpClient) { }
 
   // I would name this fetchBasket(). getBasket() makes sense in terms of HTTP get, but then setBasket should be named postBasket()
   getBasket(id:string) {
     return this.http.get<IBasket>(this.baseUrl + 'basket?id=' + id).subscribe({ 
       // next sets the field "basketSource" to the value of "basket" and notifies the subscribers
-      next: basket => this.basketSource.next(basket) 
+      next: basket => {
+        this.basketSource.next(basket);
+        this.calculateTotals(); 
+      }
     });
   }
 
   setBasket(basket:IBasket) {
     return this.http.post<IBasket>(this.baseUrl + 'basket', basket).subscribe({
       // next sets the field "basketSource" to the value of "bask" (the one returned by the API, not the method param) and notifies the subscribers
-      next: bask => this.basketSource.next(bask)
+      next: bask => {
+        this.basketSource.next(bask);
+        this.calculateTotals();
+      }
     });
   }
 
@@ -78,4 +87,17 @@ export class BasketService {
       productType: product.productType
     }
   }
+
+  private calculateTotals()
+  {
+    const basket = this.getCurrentBasketValue();
+    if (!basket) return;
+    const shipping = 0;
+    const subtotal = basket.items.reduce(
+      (sum, prod) => sum + prod.price * prod.quantity, 0
+    );
+    const total = subtotal + shipping;
+    this.basketTotalSource.next({shipping, total, subtotal});
+  }
 }
+ 
