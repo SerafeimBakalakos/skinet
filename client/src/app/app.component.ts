@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BasketService } from './basket/basket.service';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +13,10 @@ export class AppComponent implements OnInit {
 
   // Services can injected into the ctor of AppComponent
   // However it is too early to make an API request here
-  constructor() {}
+  constructor(private basketService: BasketService) {}
   
   ngOnInit(): void {
-    // Best practice: make request to the API here.
-    
-    
+    const basketId = localStorage.getItem('basket_id'); //Shouldn't these local storage keys be stored in a central file?
+    if (basketId) this.basketService.getBasket(basketId); // This will cause events to populate through other subscribers of BasketService.getBasket(...);
   }
 }
