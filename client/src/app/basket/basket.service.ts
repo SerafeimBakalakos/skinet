@@ -73,7 +73,7 @@ export class BasketService {
       productName: product.name,
       price: product.price,
       quantity: 0,
-      prictureUrl: product.pictureUrl,
+      pictureUrl: product.pictureUrl,
       brand: product.productBrand,
       productType: product.productType
     }
