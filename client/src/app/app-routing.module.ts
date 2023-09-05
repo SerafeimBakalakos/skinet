@@ -12,6 +12,7 @@ const routes: Routes = [
   {path:'server-error', component:ServerErrorComponent}, // homepage
   {path:'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule)}, // lazy loading of this module's components
   {path:'basket', loadChildren: () => import('./basket/basket.module').then(m => m.BasketModule)},
+  {path:'checkout', loadChildren: () => import('./checkout/checkout.module').then(m => m.CheckoutModule)},
   {path:'**', redirectTo:'', pathMatch:'full'}, // send them to homepage
 ];
 
