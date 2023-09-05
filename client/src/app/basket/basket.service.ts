@@ -50,12 +50,43 @@ export class BasketService {
     return this.basketSource.value;
   }
 
-  addItemToBasket(item:IProduct, quantity=1) {
-    const itemToAdd = this.mapProductItemToBasketItem(item);
+  addItemToBasket(item:IProduct | IBasketItem, quantity=1) {
+    if (this.isProduct(item)) {
+      item = this.mapProductItemToBasketItem(item);
+    }
+    
     // "getCurrentBasketValue()"" can return null, if there is no basket stored in the API
     const basket = this.getCurrentBasketValue() ?? this.createBasket();
-    basket.items = this.addOrUpdateItem(basket.items, itemToAdd, quantity);
+    basket.items = this.addOrUpdateItem(basket.items, item, quantity);
     this.setBasket(basket);
+  }
+
+  removeItemFromBasket(id: number, quantity = 1) {
+    const basket = this.getCurrentBasketValue();
+    if (!basket) return;
+    const item = basket.items.find(x => x.id === id);
+    if (item) {
+      item.quantity -= quantity;
+      if (item.quantity <= 0) { // remove the item
+        basket.items = basket.items.filter(x => x.id !== id);
+      }
+      if (basket.items.length > 0) {
+        this.setBasket(basket);
+      } else {
+        this.deleteBasket(basket);
+      }
+    }
+  }
+
+  // Delete it from the service and local storage
+  deleteBasket(basket: IBasket) {
+    return this.http.delete(this.baseUrl + 'basket?id=' + basket.id).subscribe({
+      next: () => {
+        this.basketSource.next(null);
+        this.basketTotalSource.next(null);
+        localStorage.removeItem('basket_id');
+      }
+    });
   }
 
   private addOrUpdateItem(items: IBasketItem[], itemToAdd: IBasketItem, quantity: number): IBasketItem[] {
@@ -98,6 +129,10 @@ export class BasketService {
     );
     const total = subtotal + shipping;
     this.basketTotalSource.next({shipping, total, subtotal});
+  }
+
+  private isProduct(item: IProduct | IBasketItem): item is IProduct {
+    return (item as IProduct).productBrand !== undefined;
   }
 }
  
