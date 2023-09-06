@@ -1,7 +1,10 @@
+using System.Text;
 using Core.Entities.Identity;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Extensions
 {
@@ -23,8 +26,22 @@ namespace API.Extensions
             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddSignInManager<SignInManager<AppUser>>(); // Idenity's UserManager can also be used for sign-in, but SignInManager has more features.
 
-            services.AddAuthentication(); // Always: authentication before authorization
-            services.AddAuthorization();
+            // Always: authentication before authorization
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // type of authentication: JWT
+                .AddJwtBearer(opt =>
+                {
+                    // How to validate the token
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true, // ensure that the token was signed by the same server
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Token:Key"])), // what it is checking against
+                        ValidIssuer = config["Token:Issuer"],
+                        ValidateIssuer = true
+                    };
+                }); 
+
+            services.AddAuthorization(); 
 
             return services;
         }
