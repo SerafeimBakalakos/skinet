@@ -37,7 +37,8 @@ namespace API.Extensions
                         ValidateIssuerSigningKey = true, // ensure that the token was signed by the same server
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Token:Key"])), // what it is checking against
                         ValidIssuer = config["Token:Issuer"],
-                        ValidateIssuer = true
+                        ValidateIssuer = true,
+                        ValidateAudience = false // e.g. only accept tokens from our client app
                     };
                 }); 
 
