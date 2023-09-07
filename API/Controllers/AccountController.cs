@@ -2,6 +2,7 @@ using System.Security.Claims;
 using API.Dtos;
 using API.Errors;
 using API.Extensions;
+using AutoMapper;
 using Core.Entities.Identity;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,9 +16,13 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        public AccountController(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager, ITokenService tokenService,
+            IMapper mapper)
         {
+            _mapper = mapper;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -41,7 +46,7 @@ namespace API.Controllers
             // AppUser user = await _userManager.FindByEmailAsync(email);
             
             // Option 3: Same as option 2, but hidden in our own extension methods
-            AppUser user = await _userManager.FindByEmailFromClaimsPrincipal(User);
+            AppUser user = await _userManager.FindByEmailFromClaimsPrincipalAsync(User);
             
             return new UserDto 
             {
@@ -62,11 +67,33 @@ namespace API.Controllers
 
         [Authorize]
         [HttpGet("address")]
-        public async Task<ActionResult<Address>> GetUserAdress()
+        public async Task<ActionResult<AddressDto>> GetUserAdress()
         {
             // We need to eagerly load the nav properties of AppUser
-            AppUser user = await _userManager.FindUserByClaimsPrincipalWithAddress(User);
-            return user.Address;
+            AppUser user = await _userManager.FindUserByClaimsPrincipalWithAddressAsync(User);
+            return _mapper.Map<Address, AddressDto>(user.Address);
+        }
+
+        [Authorize]
+        [HttpPut("address")]
+        public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto address)
+        {
+            // If the AppUser.Address navigation already exists, this will load it from the Identity DB. Otherwise it will be null.
+            AppUser user = await _userManager.FindUserByClaimsPrincipalWithAddressAsync(HttpContext.User);
+
+            // This will create a new Address with Address.Id = 0, Address.User=null and Address.UserId=null (UserId is a string).
+            user.Address = _mapper.Map<AddressDto, Address>(address);
+
+            // This will delete the original user.Address from the Addresses table and add a new record for the new user.Address.
+            // At this point, the new user.Address will get an new Address.Id (based on the previous PKs of the table) and its missing navigation properties will be set to Address.User=user and Address.UserId=user.Id
+            //TODO: How can we update the existing Address object, instead of creating a new one
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Ok(_mapper.Map<Address, AddressDto>(user.Address));
+            }
+            return BadRequest("Problem updating the user.");
         }
 
         [HttpPost("login")]
