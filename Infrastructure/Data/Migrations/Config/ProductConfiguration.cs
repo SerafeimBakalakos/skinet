@@ -6,6 +6,8 @@ namespace Infrastructure.Data.Migrations.Config
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
+        // Validations should also exist here in the Data Acces Layer. Validations should also exist in the Presentation Layer, i.e. the DTOs and Controlers. And there should be client-side validations
+        //QUESTION: What about validations in the Entities? The teacher of the Udemy course says that the ones in DAL cover those in Entities, but I am not sold.
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.Property(p => p.Id).IsRequired(); // Unnecessary statement. The Id would be required by default.
