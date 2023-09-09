@@ -1,3 +1,5 @@
+using API.Dtos;
+using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +9,11 @@ namespace API.Controllers
     public class BasketController : BaseApiController
     {
         private readonly IBasketRepository _basketRepo;
+        private readonly IMapper _mapper;
 
-        public BasketController(IBasketRepository basketRepo)
+        public BasketController(IBasketRepository basketRepo, IMapper mapper)
         {
+            _mapper = mapper;
             _basketRepo = basketRepo;
         }
 
@@ -22,10 +26,16 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasket basket)
-        {
-            var updatedBasket = await _basketRepo.UpdateBasketAsync(basket);
-            return Ok(updatedBasket); //QUESTION: This could also be null. WHy are we not handling this case?
+        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
+        {   
+            //TODO: If in the POST body the list is named "productItems" instead of "items", a basket with 0 items will be stored and returned.
+
+            // Our DTOs are only for validation, thus we only need them for inputs. 
+            // Personally I hate receiving EntityDto and sending Entity, but ok.
+            var customerBasket = _mapper.Map<CustomerBasketDto, CustomerBasket>(basket); // Automapper will automatically map the composed BasketItemDto to BasketItem.
+
+            var updatedBasket = await _basketRepo.UpdateBasketAsync(customerBasket);
+            return Ok(updatedBasket); //QUESTION: This could also be null. Why are we not handling this case?
         }
 
         [HttpDelete]
