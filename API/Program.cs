@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
 
@@ -27,15 +28,9 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}"); // This handles requests to endpoints that do not exist
-
-// We will keep it in production too
-// if (app.Environment.IsDevelopment())
-// {
-    // The Swagger JSON file is used to generate the UI
-    app.UseSwagger();
-    app.UseSwaggerUI();
-// }
     
+app.UseSwaggerDocumentation();
+
 app.UseStaticFiles(); //position before UseAuthorization
 
 //app.UseHttpsRedirection();
